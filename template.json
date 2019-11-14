@@ -542,11 +542,11 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                             "fileUris": [
-                                "[uri('https://raw.githubusercontent.com/lnetrebskii/azurebuildagentwin/master/arrangeBuildAgent.ps1', 'configureVM.ps1')]"
+                                "[uri('https://raw.githubusercontent.com/lnetrebskii/azurebuildagentwin/master/', 'arrangeBuildAgent.ps1')]"
                             ]
                         },
                         "protectedSettings": {
-                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File configureVM.ps1', ' -vsts_URL ' , '\"' , variables('vsts_url') , '\"' , ' -agent_Pool ' , '\"',  parameters('agent_pool') , '\"' , ' -agent_Name ' , '\"',  parameters('agent_name') , '\"' , ' -pat_Token ' , '\"' , parameters('pat_token') , '\"')]"
+                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File arrangeBuildAgent.ps1', ' -vsts_URL ' , '\"' , variables('vsts_url') , '\"' , ' -agent_Pool ' , '\"',  parameters('agent_pool') , '\"' , ' -agent_Name ' , '\"',  parameters('agent_name') , '\"' , ' -pat_Token ' , '\"' , parameters('pat_token') , '\"')]"
                         }
                     }
                 }
