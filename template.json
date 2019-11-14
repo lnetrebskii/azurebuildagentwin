@@ -542,7 +542,7 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                             "fileUris": [
-                                "[uri('https://github.com/lnetrebskii/azurebuildagentwin/raw/master/arrangeBuildAgent.ps1', 'configureVM.ps1')]"
+                                "[uri('https://raw.githubusercontent.com/lnetrebskii/azurebuildagentwin/master/arrangeBuildAgent.ps1', 'configureVM.ps1')]"
                             ]
                         },
                         "protectedSettings": {
