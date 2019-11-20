@@ -37,11 +37,11 @@ Write-Verbose("install chocholatey")
 Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'));
 choco feature enable -n allowGlobalConfirmation;
 
-Write-Verbose("install dotnetcore 2.2")
-choco install dotnetcore-sdk --version=2.2 -y;
-
 Write-Verbose("install dotnetcore the latest")
 choco install dotnetcore-sdk -y;
+
+Write-Verbose("install dotnetcore 2.2")
+choco install dotnetcore-sdk --version=2.2 -force -y;
 
 Write-Verbose("install nodejs")
 choco install nodejs -y;
