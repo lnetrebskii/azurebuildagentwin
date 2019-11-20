@@ -53,4 +53,4 @@ Write-Verbose("install java")
 choco install webdeploy -y;
 
 Write-Verbose("install build agent")
-choco install azure-pipelines-agent --params "'/AgentName:$agent_Name /Directory:c:\agent /Url:$vsts_URL /Token:$pat_Token /Pool:$agent_Pool /LogonAccount:'NT AUTHORITY\SYSTEM' /Replace /AutoLogon'"
+choco install azure-pipelines-agent --params "'/AgentName:$agent_Name /Directory:c:\agent /Url:$vsts_URL /Token:$pat_Token /Pool:$agent_Pool /Replace'"
