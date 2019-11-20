@@ -72,5 +72,3 @@ Write-Verbose("install build agent")
 $agentoutput = C:/agent/bin/Agent.Listener.exe configure --url $vsts_URL --agent $agent_Name --pool $agent_Pool  --unattended --auth pat --token $pat_Token  --windowsLogonAccount "NT AUTHORITY\SYSTEM" --replace --runAsService --runAsAutoLogon
 
 Write-Verbose($agentoutput)
-
-Restart-Computer
