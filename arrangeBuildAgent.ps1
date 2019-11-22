@@ -55,4 +55,6 @@ choco install javaruntime -y;
 Write-Verbose("install build agent")
 choco install azure-pipelines-agent --params "'/AgentName:$agent_Name /Directory:c:\agent /Url:$vsts_URL /Token:$pat_Token /Pool:$agent_Pool /Replace'"
 
-Restart-Computer
+# Restart VM using a job as per recommendation here https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
+$RestartTrigger = New-JobTrigger -Once -At (Get-Date).AddMinutes(1)
+Register-ScheduledJob -Name RestartInMinute -Trigger $RestartTrigger -ScriptBlock { Restart-Computer }

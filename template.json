@@ -71,6 +71,13 @@
             "metadata": {
                 "description": "Enter the Personal Acces Token which would be used to authenticate against Visual Studio Teamservices account to download and configure agent. [How to generate a PAT](https://docs.microsoft.com/en-us/vsts/accounts/use-personal-access-tokens-to-authenticate)"
             }
+        },
+        "powershell_script_uri": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/lnetrebskii/azurebuildagentwin/master/arrangeBuildAgent.ps1",
+            "metadata": {
+                "description": "Publicly accessible path to a PowerShell script which will be executed on VM to setup agent."
+            }
         }
     },
     "variables": {
@@ -542,7 +549,7 @@
                         "autoUpgradeMinorVersion": true,
                         "settings": {
                             "fileUris": [
-                                "[uri('https://raw.githubusercontent.com/lnetrebskii/azurebuildagentwin/master/', 'arrangeBuildAgent.ps1')]"
+                                "[parameters('powershell_script_uri')]"
                             ]
                         },
                         "protectedSettings": {
