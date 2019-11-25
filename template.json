@@ -559,7 +559,7 @@
                             ]
                         },
                         "protectedSettings": {
-                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File arrangeBuildAgent.ps1', ' -vsts_URL ' , '\"' , variables('vsts_url') , '\"' , ' -agent_Pool ' , '\"',  parameters('agent_pool') , '\"' , ' -agent_Name ' , '\"',  parameters('agent_name') , '\"' , ' -pat_Token ' , '\"' , parameters('pat_token') , '\"' , ' -cosmosDb_Key ' , '\"' , parameters('cosmosDb_key') , '\"' , ' -admin_Username ' , '\"' , parameters('admin_Username') , '\"' , ' -admin_Password ' , '\"' , parameters('admin_Password') , '\"')]"
+                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File arrangeBuildAgent.ps1', ' -vsts_URL ' , '\"' , variables('vsts_url') , '\"' , ' -agent_Pool ' , '\"',  parameters('agent_pool') , '\"' , ' -agent_Name ' , '\"',  parameters('agent_name') , '\"' , ' -pat_Token ' , '\"' , parameters('pat_token') , '\"' , ' -cosmosDb_Key ' , '\"' , parameters('cosmosDb_key') , '\"')]"
                         }
                     }
                 }
