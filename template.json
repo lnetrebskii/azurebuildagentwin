@@ -78,6 +78,12 @@
             "metadata": {
                 "description": "Publicly accessible path to a PowerShell script which will be executed on VM to setup agent."
             }
+        },
+        "cosmosDb_key": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Enter the CosmosDB emulator access key"
+            }
         }
     },
     "variables": {
@@ -553,7 +559,7 @@
                             ]
                         },
                         "protectedSettings": {
-                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File arrangeBuildAgent.ps1', ' -vsts_URL ' , '\"' , variables('vsts_url') , '\"' , ' -agent_Pool ' , '\"',  parameters('agent_pool') , '\"' , ' -agent_Name ' , '\"',  parameters('agent_name') , '\"' , ' -pat_Token ' , '\"' , parameters('pat_token') , '\"')]"
+                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File arrangeBuildAgent.ps1', ' -vsts_URL ' , '\"' , variables('vsts_url') , '\"' , ' -agent_Pool ' , '\"',  parameters('agent_pool') , '\"' , ' -agent_Name ' , '\"',  parameters('agent_name') , '\"' , ' -pat_Token ' , '\"' , parameters('pat_token') , '\"' , ' -cosmosDb_Key ' , '\"' , parameters('cosmosDb_key') , '\"')]"
                         }
                     }
                 }

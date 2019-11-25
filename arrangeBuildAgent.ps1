@@ -3,7 +3,8 @@ Param(
     $agent_Pool,
     $agent_Name,
     $pat_Token,
-    $agent_Tag
+    $agent_Tag,
+    $cosmosDb_Key
 )
 
 $tmpFile = "C:\arrangeAgent.log"
@@ -55,6 +56,30 @@ choco install javaruntime -y;
 Write-Verbose("install build agent")
 choco install azure-pipelines-agent --params "'/AgentName:$agent_Name /Directory:c:\agent /Url:$vsts_URL /Token:$pat_Token /Pool:$agent_Pool /Replace'"
 
+Write-Verbose("download Cosmos DB Emulator")
+
+$downloadDirectory = Join-Path $env:SystemDrive 'CosmosDBEmulator'
+New-Item -Path $downloadDirectory -ItemType Directory -force | Out-Null
+
+$clnt = new-object System.Net.WebClient
+$url = "https://aka.ms/cosmosdb-emulator"
+$file = Join-Path $downloadDirectory ("AzureCosmosDB.Emulator.msi")
+$clnt.DownloadFile($url, $file)
+
+# Install the MSI
+Write-Verbose("install Cosmos DB Emulator")
+Start-Process 'msiexec.exe' -ArgumentList '/i', $file,'/qn' -Wait
+Write-Verbose("installer done")
+
+Write-Verbose("create a startup job for the Cosmos DB Emulator")
+# It is a good idea to specify a random delay period of 30 seconds to one a minute to help 
+# to avoid race conditions at startup. This will also help ensure a greater chance of success for the job.
+# https://devblogs.microsoft.com/scripting/use-powershell-to-create-job-that-runs-at-startup/
+$StartupTrigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30 
+Register-ScheduledJob -Name StartCosmosDBEmulatorOnStartup -Trigger $StartupTrigger -ScriptBlock { _
+    Start-Process "c:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe" -ArgumentList '/noui', '/AllowNetworkAccess', '/NoFirewall', '/NoExplorer', "/Key=$cosmosDb_Key" }
+
+Write-Verbose("schedule a reboot in a minute")
 # Restart VM using a job as per recommendation here https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
 $RestartTrigger = New-JobTrigger -Once -At (Get-Date).AddMinutes(1)
 Register-ScheduledJob -Name RestartInMinute -Trigger $RestartTrigger -ScriptBlock { Restart-Computer }
