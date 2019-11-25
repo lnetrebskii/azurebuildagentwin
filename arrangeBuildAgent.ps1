@@ -4,7 +4,9 @@ Param(
     $agent_Name,
     $pat_Token,
     $agent_Tag,
-    $cosmosDb_Key
+    $cosmosDb_Key,
+    $admin_Username,
+    $admin_Password
 )
 
 $tmpFile = "C:\arrangeAgent.log"
@@ -76,8 +78,10 @@ Write-Verbose("create a startup job for the Cosmos DB Emulator")
 # to avoid race conditions at startup. This will also help ensure a greater chance of success for the job.
 # https://devblogs.microsoft.com/scripting/use-powershell-to-create-job-that-runs-at-startup/
 $StartupTrigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30 
+$pwd= ConvertTo-SecureString $admin_Password -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential ($admin_Username, $pwd)
 $RunCosmosDbEmulatorScriptBlock = [ScriptBlock]::Create("Start-Process ""c:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"" -ArgumentList '/noui', '/AllowNetworkAccess', '/NoFirewall', '/NoExplorer', '/Key=$cosmosDb_Key'")
-Register-ScheduledJob -Name StartCosmosDBEmulatorOnStartup -Trigger $StartupTrigger -ScriptBlock $RunCosmosDbEmulatorScriptBlock
+Register-ScheduledJob -Name StartCosmosDBEmulatorOnStartup -Trigger $StartupTrigger -ScriptBlock $RunCosmosDbEmulatorScriptBlock -Credential $credential -Authentication CredSSP
 
 Write-Verbose("schedule a reboot in a minute")
 # Restart VM using a job as per recommendation here https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
