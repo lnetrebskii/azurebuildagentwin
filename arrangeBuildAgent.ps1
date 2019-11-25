@@ -76,9 +76,9 @@ Write-Verbose("create a startup job for the Cosmos DB Emulator")
 # to avoid race conditions at startup. This will also help ensure a greater chance of success for the job.
 # https://devblogs.microsoft.com/scripting/use-powershell-to-create-job-that-runs-at-startup/
 $RunCosmosDbEmulatorScriptBlock = [ScriptBlock]::Create("Start-Process ""c:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"" -ArgumentList '/noui', '/AllowNetworkAccess', '/NoFirewall', '/NoExplorer', '/Key=$cosmosDb_Key'")
-$action = New-ScheduledTaskAction –Execute "$pshome\powershell.exe" -Argument  "$RunCosmosDbEmulatorScriptBlock; quit"
+$action = New-ScheduledTaskAction -Execute "$pshome\powershell.exe" -Argument  "$RunCosmosDbEmulatorScriptBlock; quit"
 $trigger = New-ScheduledTaskTrigger -AtStartup -RandomDelay 00:00:30
-Register-ScheduledTask -TaskName StartCosmosDBEmulatorOnStartup -Action $action -Trigger $trigger -RunLevel Highest -User "nt authority\localservice"
+Register-ScheduledTask -TaskName StartCosmosDBEmulatorOnStartup -Action $action -Trigger $trigger -RunLevel Highest -User 'nt authority\localservice'
 
 Write-Verbose("schedule a reboot in a minute")
 # Restart VM using a job as per recommendation here https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
