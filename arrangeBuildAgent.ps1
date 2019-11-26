@@ -75,6 +75,8 @@ Write-Verbose("create a startup job for the Cosmos DB Emulator")
 # It is a good idea to specify a random delay period of 30 seconds to one a minute to help 
 # to avoid race conditions at startup. This will also help ensure a greater chance of success for the job.
 # https://devblogs.microsoft.com/scripting/use-powershell-to-create-job-that-runs-at-startup/
+Install-Module -Name TaskScheduler -Force -AllowClobber
+Import-Module -Name TaskScheduler
 $RunCosmosDbEmulatorScriptBlock = [ScriptBlock]::Create("Start-Process ""c:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"" -ArgumentList '/noui', '/AllowNetworkAccess', '/NoFirewall', '/NoExplorer', '/Key=$cosmosDb_Key'")
 New-Task |
     ForEach-Object {
