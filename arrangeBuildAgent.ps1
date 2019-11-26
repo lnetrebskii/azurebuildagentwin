@@ -56,37 +56,8 @@ choco install javaruntime -y;
 Write-Verbose("install build agent")
 choco install azure-pipelines-agent --params "'/AgentName:$agent_Name /Directory:c:\agent /Url:$vsts_URL /Token:$pat_Token /Pool:$agent_Pool /Replace'"
 
-Write-Verbose("download Cosmos DB Emulator")
-
-$downloadDirectory = Join-Path $env:SystemDrive 'CosmosDBEmulator'
-New-Item -Path $downloadDirectory -ItemType Directory -force | Out-Null
-
-$clnt = new-object System.Net.WebClient
-$url = "https://aka.ms/cosmosdb-emulator"
-$file = Join-Path $downloadDirectory ("AzureCosmosDB.Emulator.msi")
-$clnt.DownloadFile($url, $file)
-
-# Install the MSI
-Write-Verbose("install Cosmos DB Emulator")
-Start-Process 'msiexec.exe' -ArgumentList '/i', $file,'/qn' -Wait
-Write-Verbose("installer done")
-
-Write-Verbose("create a startup job for the Cosmos DB Emulator")
-# It is a good idea to specify a random delay period of 30 seconds to one a minute to help 
-# to avoid race conditions at startup. This will also help ensure a greater chance of success for the job.
-# https://devblogs.microsoft.com/scripting/use-powershell-to-create-job-that-runs-at-startup/
-Install-Module -Name TaskScheduler -Force -AllowClobber
-Import-Module -Name TaskScheduler
-$RunCosmosDbEmulatorScriptBlock = [ScriptBlock]::Create("Start-Process ""c:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"" -ArgumentList '/noui', '/AllowNetworkAccess', '/NoFirewall', '/NoExplorer', '/Key=$cosmosDb_Key'")
-New-Task |
-    ForEach-Object {
-        $_.Principal.Id = "NTAuthority\SYSTEM"
-        $_.Principal.RunLevel = 1
-        $_
-    } |
-    Add-TaskAction -Script $RunCosmosDbEmulatorScriptBlock |
-    Add-TaskTrigger -OnBoot |
-    Register-ScheduledTask StartCosmosDBEmulatorOnStartup
+Write-Verbose("install cosmos db emulator")
+choco install azure-documentdb-emulator -y;
 
 Write-Verbose("schedule a reboot in a minute")
 # Restart VM using a job as per recommendation here https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
