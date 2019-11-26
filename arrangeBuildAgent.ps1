@@ -4,7 +4,9 @@ Param(
     $agent_Name,
     $pat_Token,
     $agent_Tag,
-    $cosmosDb_Key
+    $cosmosDb_Key,
+    $admin_Username,
+    $admin_Password
 )
 
 $tmpFile = "C:\arrangeAgent.log"
@@ -57,7 +59,19 @@ Write-Verbose("install build agent")
 choco install azure-pipelines-agent --params "'/AgentName:$agent_Name /Directory:c:\agent /Url:$vsts_URL /Token:$pat_Token /Pool:$agent_Pool /Replace'"
 
 Write-Verbose("install cosmos db emulator")
-choco install azure-documentdb-emulator -y;
+choco install azure-documentdb-emulator -y --ignorechecksum;
+
+Write-Verbose("create a startup job for the Cosmos DB Emulator")
+# It is a good idea to specify a random delay period of 30 seconds to one a minute to help 
+# to avoid race conditions at startup. This will also help ensure a greater chance of success for the job.
+# https://devblogs.microsoft.com/scripting/use-powershell-to-create-job-that-runs-at-startup/
+$RunCosmosDbEmulatorScriptBlock = [ScriptBlock]::Create("Start-Process ""c:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"" -ArgumentList '/noui', '/AllowNetworkAccess', '/NoFirewall', '/NoExplorer', '/Key=$cosmosDb_Key'")
+$StartupTrigger = New-JobTrigger -AtStartup -RandomDelay 00:00:30 
+$Password = $admin_Password | ConvertTo-SecureString -AsPlainText -Force
+$AdminCreds = New-Object -TypeName pscredential -ArgumentList $admin_Username, $Password
+Register-ScheduledJob -Name StartCosmosDBEmulatorOnStartup -Trigger $StartupTrigger -ScriptBlock $RunCosmosDbEmulatorScriptBlock -Credential $AdminCreds
+Write-Verbose("$admin_Username : $admin_Password")
+Write-Verbose($RunCosmosDbEmulatorScriptBlock)
 
 Write-Verbose("schedule a reboot in a minute")
 # Restart VM using a job as per recommendation here https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
