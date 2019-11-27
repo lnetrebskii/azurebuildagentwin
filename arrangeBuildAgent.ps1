@@ -57,7 +57,7 @@ Write-Verbose("install build agent")
 choco install azure-pipelines-agent --params "'/AgentName:$agent_Name /Directory:c:\agent /Url:$vsts_URL /Token:$pat_Token /Pool:$agent_Pool /Replace'"
 
 Write-Verbose("install cosmos db emulator")
-choco install azure-documentdb-emulator -y;
+choco install azure-documentdb-emulator -y --ignorechecksum;
 
 Write-Verbose("schedule a reboot in a minute")
 # Restart VM using a job as per recommendation here https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
