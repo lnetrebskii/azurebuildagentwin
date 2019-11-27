@@ -4,7 +4,9 @@ Param(
     $agent_Name,
     $pat_Token,
     $agent_Tag,
-    $cosmosDb_Key
+    $cosmosDb_Key,
+    $admin_Username,
+    $admin_Password
 )
 
 $tmpFile = "C:\arrangeAgent.log"
@@ -58,6 +60,17 @@ choco install azure-pipelines-agent --params "'/AgentName:$agent_Name /Directory
 
 Write-Verbose("install cosmos db emulator")
 choco install azure-documentdb-emulator -y --ignorechecksum;
+
+$RunCosmosDbEmulatorScriptBlock = [ScriptBlock]::Create("Start-Process ""c:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"" -ArgumentList '/noui', '/AllowNetworkAccess', '/NoFirewall', '/NoExplorer', '/Key=$cosmosDb_Key'")
+$StartupTrigger = New-JobTrigger -AtLogOn -User $admin_Username -RandomDelay 00:00:30 
+Register-ScheduledJob -Name StartCosmosDBEmulatorOnStartup -Trigger $StartupTrigger -ScriptBlock $RunCosmosDbEmulatorScriptBlock
+
+$RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+Set-ItemProperty $RegPath "AutoAdminLogon" -Value "1" -type String 
+Set-ItemProperty $RegPath "DefaultUsername" -Value "$admin_Username" -type String 
+Set-ItemProperty $RegPath "DefaultPassword" -Value "$admin_Password" -type String
+
+Write-Verbose("$admin_Username : $admin_Password")
 
 Write-Verbose("schedule a reboot in a minute")
 # Restart VM using a job as per recommendation here https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-windows
