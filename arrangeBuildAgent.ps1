@@ -63,7 +63,9 @@ choco install azure-documentdb-emulator -y --ignorechecksum;
 
 $RunCosmosDbEmulatorScriptBlock = [ScriptBlock]::Create("Start-Process ""c:\Program Files\Azure Cosmos DB Emulator\CosmosDB.Emulator.exe"" -ArgumentList '/noui', '/AllowNetworkAccess', '/NoFirewall', '/NoExplorer', '/Key=$cosmosDb_Key'")
 $StartupTrigger = New-JobTrigger -AtLogOn -User $admin_Username -RandomDelay 00:00:30 
-Register-ScheduledJob -Name StartCosmosDBEmulatorOnStartup -Trigger $StartupTrigger -ScriptBlock $RunCosmosDbEmulatorScriptBlock
+$Password = $admin_Password | ConvertTo-SecureString -AsPlainText -Force
+$AdminCreds = New-Object -TypeName pscredential -ArgumentList $admin_Username, $Password
+Register-ScheduledJob -Name StartCosmosDBEmulatorOnStartup -Trigger $StartupTrigger -ScriptBlock $RunCosmosDbEmulatorScriptBlock -Credential $AdminCreds
 
 $RegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 Set-ItemProperty $RegPath "AutoAdminLogon" -Value "1" -type String 
